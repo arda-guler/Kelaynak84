@@ -1,0 +1,8 @@
+{
+  "type": "airframe",
+  "name": "LM Bombcat",
+  "manufacturer": "Logheat Mardin",
+  "mass": 800,
+  "cd": 1,
+  "effectiveness": 1
+}

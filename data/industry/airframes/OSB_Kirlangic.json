@@ -1,0 +1,8 @@
+{
+  "type": "airframe",
+  "name": "OSB Kirlangic",
+  "manufacturer": "Ousteem Aerospace",
+  "mass": 700,
+  "cd": 0.87,
+  "effectiveness": 0.95
+}

@@ -1,0 +1,8 @@
+{
+  "type": "airframe",
+  "name": "MSB Fuji",
+  "manufacturer": "Matsuboshi",
+  "mass": 900,
+  "cd": 0.98,
+  "effectiveness": 1.02
+}

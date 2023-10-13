@@ -1,0 +1,8 @@
+{
+  "type": "airframe",
+  "name": "MSB Kinki",
+  "manufacturer": "Matsuboshi",
+  "mass": 1200,
+  "cd": 1,
+  "effectiveness": 1
+}

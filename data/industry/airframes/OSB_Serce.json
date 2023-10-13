@@ -1,0 +1,8 @@
+{
+  "type": "airframe",
+  "name": "OSB Serce",
+  "manufacturer": "Ousteem Aerospace",
+  "mass": 500,
+  "cd": 0.8,
+  "effectiveness": 0.75
+}
