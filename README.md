@@ -4,7 +4,7 @@ Kelaynak 84 is a *combat flight simulation* and *trading* game that takes inspir
 [**Digital Combat Simulator**](https://www.digitalcombatsimulator.com/en/), [**Falcon 4**](https://www.microprose.com/games/falcon-4/) and the influential 1984 classic space trading game [**Elite**](https://en.wikipedia.org/wiki/Elite_(video_game)).
 It mixes up the gameplay elements of Elite with a classical flight simulator, and just like Elite did, it uses wireframe 3D graphics.
 
-![kelaynak_ss1](https://github.com/arda-guler/Kelaynak84/assets/80536083/3c0a5071-b9bf-4ce7-a866-ac28b0ac310e)
+![kelaynak_ss1](https://github.com/arda-guler/Kelaynak84/assets/80536083/de3b05ec-e5c2-4531-b259-502aeb2e6d94)
 
 ## Gameplay
 ### Main Game (main.py)
