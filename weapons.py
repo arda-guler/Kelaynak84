@@ -5,16 +5,17 @@ from rigidbody import *
 from sound import *
 
 class RocketPod:
-    def __init__(self, platform, rel_pos, num_rockets, cooldown=0.5):
+    def __init__(self, platform, rel_pos, num_rockets, cooldown=0.5, makesound=False):
         self.platform = platform
         self.rel_pos = rel_pos
         self.num_rockets = num_rockets
         self.cooldown = cooldown
 
         self.cooldown_timer = 0
+        self.makesound = makesound
         # self.mass <--- implement later
 
-    def shoot(self, bodies):
+    def shoot(self, bodies, target=None):
         if self.num_rockets and not self.cooldown_timer:
             init_pos = self.platform.pos + self.platform.orient[0] * self.rel_pos[0] + \
                        self.platform.orient[1] * self.rel_pos[1] + \
@@ -47,17 +48,20 @@ class RocketPod:
                                 init_orient, init_ang_vel, init_ang_accel,
                                 init_mass, init_inertia,
                                 max_thrust, throttle_range, throttle,
-                                prop_mass, mass_flow, Cds, Cdas, cross_sections)
+                                prop_mass, mass_flow, Cds, Cdas, cross_sections,
+                                target)
 
             bodies.append(new_rocket)
         
             self.num_rockets -= 1
             self.cooldown_timer = self.cooldown
-            play_sfx("missile_launch", channel=4)
+            if self.makesound:
+                play_sfx("missile_launch", channel=4)
             
         elif not self.num_rockets and not self.cooldown_timer:
             self.cooldown_timer = self.cooldown
-            play_sfx("out", channel=4)
+            if self.makesound:
+                play_sfx("out", channel=4)
 
     def reload(self, num):
         self.num_rockets = num

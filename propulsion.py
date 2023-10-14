@@ -42,8 +42,9 @@ class Nozzle:
         return mass_flow * self.conversion_rate * energy_utilization
 
 class Turbojet:
-    def __init__(self, intake, compressor, turbine, nozzle, efficiency, air_fuel_ratio, max_fuel_rate,
-                 throttle_range, APU_fuel_rate):
+    def __init__(self, name, intake, compressor, turbine, nozzle, efficiency, air_fuel_ratio, max_fuel_rate,
+                 throttle_range, APU_fuel_rate, price, manufacturer):
+        self.name = name
         self.intake = intake
         self.compressor = compressor
         self.turbine = turbine
@@ -53,6 +54,9 @@ class Turbojet:
         self.max_fuel_rate = max_fuel_rate
         self.throttle_range = throttle_range
         self.APU_fuel_rate = APU_fuel_rate
+        self.price = price
+        self.manufacturer = manufacturer
+        self.type = "engine"
         
         self.APU = False
         self.throttle = 0

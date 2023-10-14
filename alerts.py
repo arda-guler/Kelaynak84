@@ -3,7 +3,7 @@ import numpy as np
 from sound import *
 
 def do_warnings(plane, AoA, G):
-    if plane.state == "INFLIGHT" and not get_channel_busy(7):
+    if plane.state == "INFLIGHT" and not get_channel_busy(6):
         warning = None
 
         if np.linalg.norm(plane.vel) < 50 and AoA > 20:
@@ -17,5 +17,5 @@ def do_warnings(plane, AoA, G):
             warning = "overg"
 
         if warning:
-            play_sfx(warning, 0, 7, 1)
+            play_sfx(warning, 0, 6, 1)
 

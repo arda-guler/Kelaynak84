@@ -4,5 +4,7 @@
   "manufacturer": "Ousteem Aerospace",
   "mass": 500,
   "cd": 0.8,
-  "effectiveness": 0.75
+  "effectiveness": 0.75,
+  "price": 80000,
+  "cargo_space": 5
 }

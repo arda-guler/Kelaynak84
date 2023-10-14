@@ -4,5 +4,7 @@
   "manufacturer": "Matsuboshi",
   "mass": 900,
   "cd": 0.98,
-  "effectiveness": 1.02
+  "effectiveness": 1.02,
+  "price": 120000,
+  "cargo_space": 14
 }

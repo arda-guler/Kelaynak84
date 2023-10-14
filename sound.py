@@ -14,8 +14,19 @@ os_name = get_os_type()
 from pygame import mixer
 clear_cmd_terminal(os_name) # __|__
 
+bgms = {}
+
 def init_sound():
+    global bgms
     mixer.init()
+
+    try:
+        for bgm in os.listdir("data/bgm/"):
+            newmsc = mixer.Sound("data/bgm/" + bgm)
+            bgms[bgm[:-4]] = newmsc
+
+    except:
+        pass
 
 def play_sfx(track, loops=0, channel=1, volume=1):
     chn = mixer.Channel(channel)
@@ -39,3 +50,13 @@ def stop_channel(channel):
 def fade_out_channel(channel_num):
     channel = mixer.Channel(channel_num)
     channel.fadeout(2000)
+
+def fade_out_bgm(fade_time = 2000):
+    chn = mixer.Channel(7)
+    chn.fadeout(fade_time)
+
+def play_bgm(track, channel=7):
+    chn = mixer.Channel(7)
+    msc = bgms[track]
+    chn.set_volume(1)
+    chn.play(msc, -1)

@@ -4,5 +4,7 @@
   "manufacturer": "Logheat Mardin",
   "mass": 700,
   "cd": 0.95,
-  "effectiveness": 0.9
+  "effectiveness": 0.9,
+  "price": 40000,
+  "cargo_space": 7
 }

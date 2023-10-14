@@ -7,5 +7,6 @@
   "compressor_coeff": 0.15,
   "max_rpm": 7000,
   "fuel_consumption": 0.5,
-  "APU_fuel_consumption": 0.2
+  "APU_fuel_consumption": 0.2,
+  "price": 50000
 }

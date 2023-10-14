@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from sound import *
+
 class RigidBody:
     def __init__(self, model, CoM, pos, vel, accel, orient, ang_vel, ang_accel, mass, inertia):
         self.model = model
@@ -70,7 +72,7 @@ class RigidBody:
 
 class Rocket(RigidBody):
     def __init__(self, model, CoM, pos, vel, accel, orient, ang_vel, ang_accel, mass, inertia,
-                 max_thrust, throttle_range, throttle, prop_mass, mass_flow, Cds, Cdas, cross_sections):
+                 max_thrust, throttle_range, throttle, prop_mass, mass_flow, Cds, Cdas, cross_sections, target=None):
         super(Rocket, self).__init__(model, CoM, pos, vel, accel, orient, ang_vel, ang_accel, mass, inertia)
         self.max_thrust = max_thrust
         self.throttle_range = throttle_range
@@ -80,11 +82,19 @@ class Rocket(RigidBody):
         self.Cds = Cds
         self.Cdas = Cdas
         self.cross_sections = cross_sections
+        self.target = target
 
         self.aero_resistance = np.multiply(self.cross_sections, self.Cds)
         self.angular_resistance = np.multiply(self.cross_sections, self.Cdas)
 
         self.thrust = self.throttle / 100 * self.max_thrust
+
+    def check_target(self, bodies):
+        if self.target and np.linalg.norm(self.pos - self.target.pos) < 10:
+            self.target.hp -= 50
+            bodies.remove(self)
+            play_sfx("explosion", channel=6)
+            del self
 
     def drain_fuel(self, dt):
         self.update_mass(-self.mass_flow * self.throttle / 100, dt)
@@ -252,7 +262,7 @@ class SimpleAircraft(RigidBody):
 class Aircraft(RigidBody):
     def __init__(self, model, CoM, pos, vel, accel, orient, ang_vel, ang_accel, mass, inertia,
                  engine, prop_mass, cross_sections, Cds, Cdas, angular_damping, Cl, lift_moment_arm,
-                 control_effectiveness, rear_gear_moment, brake_force, weapons, state="INFLIGHT"):
+                 control_effectiveness, rear_gear_moment, brake_force, cargo_space, weapons, state="INFLIGHT"):
         super(Aircraft, self).__init__(model, CoM, pos, vel, accel, orient, ang_vel, ang_accel, mass, inertia)
         self.engine = engine
         self.prop_mass = prop_mass
@@ -266,6 +276,8 @@ class Aircraft(RigidBody):
         self.rear_gear_moment = rear_gear_moment
         self.brake_force = brake_force
 
+        self.cargo_space = cargo_space
+
         self.weapons = weapons
 
         self.aero_resistance = np.multiply(self.cross_sections, self.Cds)
@@ -273,6 +285,7 @@ class Aircraft(RigidBody):
 
         self.brake = 0
         self.state = state
+        self.hp = 100
 
     def drain_fuel(self, dt):
         self.update_mass(-self.engine.fuel_rate, dt)

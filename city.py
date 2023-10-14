@@ -4,9 +4,14 @@ import numpy as np
 from scenery_objects import *
 
 class City:
-    def __init__(self, pos, size):
+    def __init__(self, name, desc, parts, commodities, pos, size, bgm):
+        self.name = name
+        self.desc = desc
+        self.parts = parts
+        self.commodities = commodities
         self.pos = pos
         self.size = size
+        self.bgm = bgm
         self.buildings = self.generate()
 
     def generate(self):
