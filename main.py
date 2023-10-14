@@ -317,7 +317,7 @@ def main():
     city_panel_shown = False
     hundred_cycle = 0
     AP_city = None
-    player_money = 1000000
+    player_money = 100
     player_cargo = {"Foodstuff": 0,
                     "Water": 0,
                     "Electronic Components": 0,
