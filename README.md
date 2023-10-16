@@ -51,6 +51,8 @@ Developer's note: If you want a cheap aircraft, buy components from here.
 ## Default Controls
 **W, A, S, D, Q, E**: Move control surfaces
 
+**Shift + W**, **Shift + S**: Adjust elevator trim
+
 **U, I, O, J, K, L**: Rotate camera
 
 **T, G**: Start & stop APU (you may need this to start your engine)
