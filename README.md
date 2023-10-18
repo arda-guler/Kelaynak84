@@ -35,7 +35,7 @@ A small industrial city.
 
 Home to **Matsuboshi**, which specializes in heavy-lift airframes.
 
-Home to **Kobesaki**, which specializes in fuel-efficient propulsion. (That fuel thing still needs some code implementation :D)
+Home to **Kobesaki**, which specializes in fuel-efficient propulsion.
 
 Developer's note: If you want to make a good freighter, buy components from here.
 
