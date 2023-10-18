@@ -82,8 +82,8 @@ def main():
         
     # INIT VESSELS
     print("Initializing vessels...")
-    init_pos = np.array([0.0, 1.2, 0.0])         # m
-    init_vel = np.array([0.0, 0.0, 0.0])          # m s-1
+    init_pos = np.array([0.0, 1000, 0.0])         # m
+    init_vel = np.array([0.0, 0.0, 100.0])          # m s-1
     init_accel = np.array([0.0, 0.0, 0.0])          # m s-2
     init_orient = np.array([[1.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
@@ -94,11 +94,13 @@ def main():
     init_inertia = np.array([[6000.0, 0.0, 0.0],
                              [0.0, 6000.0, 0.0],
                              [0.0, 0.0, 3000.0]])   # kg m2
+    max_thrust = 5e3                               # N
     throttle_range = [0, 100]                       # %
     throttle = 100                                  # %
     prop_mass = 150                                 # kg
+    mass_flow = 0.001                                # kg s-1
 
-    plane_model = Model("plane_cockpit")
+    plane_model = Model("plane")
     init_CoM = np.array([0.0, 0.0, 2.0])
 
     cross_sections = np.array([8, 10, 2])            # m2
@@ -159,6 +161,7 @@ def main():
                  "Household Machinery": 400,
                  "Heavy Machinery": 120,
                  "Raw Ore": 0.1,
+                 "Fuel": 25,
                  "Construction Materials": 20,
                  "Luxuries": 4000,
                  "Precious Metals": 7000},
@@ -182,6 +185,7 @@ def main():
                  "Household Machinery": 300,
                  "Heavy Machinery": 80,
                  "Raw Ore": 5,
+                 "Fuel": 60,
                  "Construction Materials": 18,
                  "Luxuries": 2500,
                  "Precious Metals": 15000},
@@ -205,6 +209,7 @@ def main():
                  "Household Machinery": 350,
                  "Heavy Machinery": 100,
                  "Raw Ore": 3,
+                 "Fuel": 40,
                  "Construction Materials": 28,
                  "Luxuries": 2900,
                  "Precious Metals": 10000},
@@ -254,6 +259,7 @@ def main():
 
     glRotate(-180, 0, 1, 0)    
     main_cam.lock_to_target(bodies[0])
+    main_cam.offset_amount = 60
 
     def move_cam(movement):
         main_cam.move(movement)
@@ -266,8 +272,8 @@ def main():
     cam_pitch_dn = "I"
     cam_yaw_left = "J"
     cam_yaw_right = "L"
-    cam_roll_cw = "O"
-    cam_roll_ccw = "U"
+    cam_roll_cw = "U"
+    cam_roll_ccw = "O"
 
     plane_pitch_up = "S"
     plane_pitch_dn = "W"
@@ -286,7 +292,7 @@ def main():
     metric_key = "M"
     imperial_key = "N"
 
-    first_person_ui = True
+    first_person_ui = False
 
     cam_speed = 100
     cam_rot_speed = 100
@@ -307,12 +313,12 @@ def main():
 
     pitch_trim = 0
 
-    encounter_chance = 0.0001
+    encounter_chance = 0.01
     current_encounter = None
     city_panel_shown = False
     hundred_cycle = 0
     AP_city = None
-    player_money = 100
+    player_money = 1000000
     player_cargo = {"Foodstuff": 0,
                     "Water": 0,
                     "Electronic Components": 0,
@@ -321,11 +327,13 @@ def main():
                     "Household Machinery": 0,
                     "Heavy Machinery": 0,
                     "Raw Ore": 0,
+                    "Fuel": 0,
                     "Construction Materials": 0,
                     "Luxuries": 0,
                     "Precious Metals": 0}
 
-    game_running = True
+    last_cam_pitch = 0
+    
     while not glfw.window_should_close(window):
         t_cycle_start = time.perf_counter()
         glfw.poll_events() 
@@ -345,64 +353,8 @@ def main():
         if kbd.is_pressed(cam_roll_ccw):
             rotate_cam([0, 0, -cam_rot_speed * dt])
 
-        if kbd.is_pressed(plane_pitch_up):
-            if kbd.is_pressed("Shift"):
-                pitch_trim += 0.2 * dt
-            else:
-                ctrl_state[1] += 1 * dt
-        elif kbd.is_pressed(plane_pitch_dn):
-            if kbd.is_pressed("Shift"):
-                pitch_trim -= 0.2 * dt
-            else:
-                ctrl_state[1] -= 1 * dt
-        else:
-            if abs(ctrl_state[1] - pitch_trim) > 0.2:
-                ctrl_state[1] = ctrl_state[1] - (ctrl_state[1] - pitch_trim) * dt
-            else:
-                ctrl_state[1] = pitch_trim
-
-        if kbd.is_pressed(plane_roll_ccw):
-            ctrl_state[0] += 1 * dt
-        elif kbd.is_pressed(plane_roll_cw):
-            ctrl_state[0] -= 1 * dt
-        else:
-            if abs(ctrl_state[0]) > 0.3:
-                ctrl_state[0] *= 1 - 2 * dt
-            else:
-                ctrl_state[0] = 0
-
-        if kbd.is_pressed(plane_yaw_right):
-            ctrl_state[2] += 1 * dt
-        elif kbd.is_pressed(plane_yaw_left):
-            ctrl_state[2] -= 1 * dt
-        else:
-            if abs(ctrl_state[2]) > 0.3:
-                ctrl_state[2] *= 1 - 2 * dt
-            else:
-                ctrl_state[2] = 0
-
-        if kbd.is_pressed(plane_throttle_up):
-            AP.update_throttle(30, dt)
-        elif kbd.is_pressed(plane_throttle_dn):
-            AP.update_throttle(-30, dt)
-
-        if kbd.is_pressed(shoot):
-            if current_encounter:
-                AP.weapons[0].shoot(bodies, current_encounter.enemy)
-            else:
-                AP.weapons[0].shoot(bodies)
-
-        if kbd.is_pressed(brake):
-            AP.brake = 0.75
-        else:
-            AP.brake = 0
-
         for i in range(len(ctrl_state)):
             ctrl_state[i] = min(max(ctrl_state[i], -1), 1)
-
-        AP.aileron(ctrl_state[0])
-        AP.elevator(ctrl_state[1])
-        AP.rudder(ctrl_state[2])
 
         if kbd.is_pressed(metric_key): # superior metric units for the superior people
             velocity_conversion_factor = 1
@@ -411,10 +363,62 @@ def main():
             velocity_conversion_factor = 1.943844 # knots
             altitude_conversion_factor = 3.28084 # feet
 
-        if kbd.is_pressed(APU_start):
-            AP.engine.APU = True
-        elif kbd.is_pressed(APU_stop):
-            AP.engine.APU = False
+        # AUTOPILOT
+
+        # pull up!
+        AP.engine.throttle = 1
+        AP.engine.APU = True
+        
+        if AP.pos[1] < 300 and np.dot(AP.orient[2], np.array([0, -1, 0]) > 0):
+            max_orient_1 = np.linalg.norm( np.array([0, 1, 0]) - np.dot(player.orient[2], np.array([0, 1, 0])) * player.orient[2] )
+            if np.dot(AP.orient[1], np.array([0, 1, 0])) < max_orient * 0.8:
+                if np.dot(AP.orient[0], np.array([0, 1, 0])) < 0:
+                    AP.aileron(-0.8)
+                else:
+                    AP.aileron(0.8)
+
+            if np.dot(AP.orient[1], np.array([0, 1, 0])) > 0:
+                AP.elevator(0.8)
+
+        # dogfight
+        elif current_encounter:
+            player = AP
+            enemy = current_encounter.enemy
+            
+            enemy_actual_rel_pos = (enemy.pos - player.pos)
+            enemy_actual_dist = np.linalg.norm(enemy_actual_rel_pos)
+
+            enemy_rel_pos = (enemy.pos - player.pos) + enemy.vel * enemy_actual_dist / 500
+            enemy_dist = np.linalg.norm(enemy_rel_pos)
+            enemy_dir = enemy_rel_pos / enemy_dist
+        
+            max_orient_1 = np.linalg.norm( enemy_dir - np.dot(player.orient[2], enemy_dir) * player.orient[2] )
+            # lift vector not aligned with player?
+            if np.dot(player.orient[1], enemy_dir) < max_orient_1 * 0.8:
+
+                # should I roll clockwise?
+                if np.dot(player.orient[0], enemy_dir) > 0:
+                    aileron_amount = np.dot(player.orient[0], enemy_dir)
+                    player.aileron(0.8 * aileron_amount)
+                else:
+                    aileron_amount = -np.dot(player.orient[0], enemy_dir)
+                    player.aileron(-0.8 * aileron_amount)
+
+            # should I pitch?
+            if np.linalg.norm(player.vel) < 100:
+                elevator_scaler = (np.linalg.norm(player.vel) - 100) / 100
+            else:
+                elevator_scaler = 1
+            elevator_amount = -(np.dot(player.orient[2], enemy_dir) - 1) * elevator_scaler
+            player.elevator(elevator_amount)
+
+            if np.dot(player.orient[1], enemy_dir) > 0:
+                if np.dot(player.orient[2], enemy_dir) < 0.98:
+                    player.elevator(0.8)
+
+                else:
+                    player.elevator(0.3)
+                    player.weapons[0].shoot(bodies)
 
         # PHYSICS
 
@@ -470,7 +474,7 @@ def main():
                 b.vel = b.vel - b.vel * 0.05 * dt
 
         main_cam.move_with_lock(dt)
-        main_cam.rotate_with_lock(dt)
+        # main_cam.rotate_with_lock(dt)
 
         if not current_encounter == None:
             current_encounter.update(gravity, bodies, dt)
@@ -491,6 +495,45 @@ def main():
                 play_sfx(rwr_snd, 0, 6)
         elif not rwr_snd or rwr_snd == "rwr_new" or rwr_snd == "rwr_lost":
             stop_channel(6)
+
+        # ROTATE Cam
+        if current_encounter:
+            enemy = current_encounter.enemy
+            player = AP
+            
+            cam_dir = -main_cam.orient[2]
+            direction = -main_cam.orient[2]
+            direction[1] = 0
+            direction = direction / np.linalg.norm(direction)
+            try:
+                angle = np.arccos(min(max(np.dot(cam_dir, direction), -0.999), 0.999))
+            except:
+                angle = 0
+
+            rotate_cam([-angle, 0, 0])
+
+            direction = enemy.pos - player.pos
+            direction[1] = 0
+            direction = direction / np.linalg.norm(direction)
+
+            try:
+                angle = np.arccos(min(max(np.dot(cam_dir, direction), -0.999), 0.999))
+            except:
+                angle = 0
+
+            if np.dot(main_cam.orient[0], direction) > 0:
+                angle = - angle
+            rotate_cam([0, angle, 0])
+
+            direction = enemy.pos - player.pos
+            direction = direction / np.linalg.norm(direction)
+
+            try:
+                angle = np.arccos(min(max(np.dot(cam_dir, direction), -0.999), 0.999))
+            except:
+                angle = 0
+
+            rotate_cam([angle, 0, 0])
                 
         # GRAPHICS
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -553,7 +596,7 @@ def main():
         render_AN(G_str, G_color, [4, 4.5], main_cam, font_size=0.05, fpu=first_person_ui)
         render_AN(rockets_str, rockets_color, [2, -5.5], main_cam, font_size=0.05, fpu=first_person_ui)
         render_AN(APU_str, APU_color, [-8, -5.4], main_cam, font_size=0.05, fpu=first_person_ui)
-        render_AN(prop_str, prop_color, [-8, -5.8], main_cam, font_size=0.05, fpu=first_person_ui)
+        # render_AN(prop_str, prop_color, [-8, -5.8], main_cam, font_size=0.05, fpu=first_person_ui)
         render_AN(city_str, city_color, [0.5, -3.8], main_cam, font_size=0.08, fpu=first_person_ui)
         
         glfw.swap_buffers(window)
@@ -580,7 +623,7 @@ def main():
 
             in_city = True
             while in_city:
-                print("\nPlease make a choice: 1) Buy Commodities, 2) Sell Commodities, 3) Buy Aircraft Components, 4) Refuel, 9) Leave City")
+                print("\nPlease make a choice: 1) Buy Commodities, 2) Sell Commodities, 3) Buy Aircraft Components, 9) Leave City")
                 choice = input(" > ")
 
                 if choice:
@@ -653,26 +696,12 @@ def main():
                                 AP.engine = player_engine
                                 
                             else:
-                                print("You do not have enough money!")
-
-                elif choice == 4:
-                    if AP.prop_mass < 150:
-                        fuel_cost = (150 - AP.prop_mass) * 0.3
-                        if player_money > fuel_cost:
-                            AP.prop_mass = 150
-                            player_money = player_money - fuel_cost
-                            print("Your fuel tank has been filled.")
-                            print("Your cash:", player_money)
-                        else:
-                            print("You do not have enough money to refuel! " + str(int(fuel_cost) + 1) + " credits required.")
-                    else:
-                        print("Your fuel tank is full.")
+                                print("You do not have enough money!")    
 
                 elif choice == 9:
                     in_city = False
                 
             city_panel_shown = True
-            AP.weapons[0].reload(30)
             print("Please DO NOT CLOSE THIS WINDOW. You may return to the flight screen.")
             
         if city_panel_shown and AP.state != "LANDED":
@@ -703,21 +732,13 @@ def main():
                         play_bgm("pluvious")
 
         # ENCOUNTERS
-        if AP.state == "INFLIGHT" and current_encounter == None and not AP_city:
+        if AP.state == "INFLIGHT" and current_encounter == None:
             chance = random.uniform(0, 1)
             if chance < encounter_chance:
                 current_encounter = Encounter(AP, "action", airframes, engines)
                 bodies.append(current_encounter.enemy)
-                play_bgm("massacre_machine")
 
         hundred_cycle += 1
-
-        if AP.state == "CRASHED" or AP.hp <= 0:
-            render_AN("GAME OVER", magenta, [-2, 2], main_cam, font_size=0.08, fpu=first_person_ui)
-            glfw.swap_buffers(window)
-            print("GAME OVER")
-            input("Press Enter to end.")
-            game_running = False
 
         dt = time.perf_counter() - t_cycle_start
         

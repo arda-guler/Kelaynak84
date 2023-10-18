@@ -63,9 +63,14 @@ class Turbojet:
         self.thrust = 0
         self.fuel_rate = 0
 
-    def compute_thrust(self, vel, dt):
+    def compute_thrust(self, prop_mass, vel, dt):
         self.throttle = max(min(self.throttle, 1), 0)
         intake_air_momentum = self.intake.compute_air_intake(vel)
+
+        if prop_mass <= 0:
+            self.thrust = 0
+            self.compressor.rpm = self.compressor.rpm * (1 - 0.2 * dt)
+            return
         
         if not self.compressor.state == "STALL":
             intake_air_suction = self.compressor.compute_suction()

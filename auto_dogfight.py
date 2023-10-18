@@ -52,7 +52,7 @@ def read_industry():
 
         throttle_range = [0, 100] 
         efficiency = 0.6
-        air_fuel_ratio = 2000 # this is an air volume vs. fuel MASS ratio, so it is not going to agree with anything familiar of course
+        air_fuel_ratio = 20000 # this is an air volume vs. fuel MASS ratio, so it is not going to agree with anything familiar of course
         max_fuel_rate = data['fuel_consumption']
         APU_fuel_rate = data['APU_fuel_consumption']
         engines[data['name']] = Turbojet(data['name'], intake, compressor, turbine, nozzle, efficiency, air_fuel_ratio, max_fuel_rate, throttle_range, APU_fuel_rate, data['price'], data['manufacturer'])
@@ -78,12 +78,12 @@ def main():
     # READ INDUSTRY DATA
     airframes, engines = read_industry()
     player_airframe = airframes["LM Bombcat"]
-    player_engine = engines["SE 7000"]
+    player_engine = engines["APS 7K"]
         
     # INIT VESSELS
     print("Initializing vessels...")
-    init_pos = np.array([0.0, 1000.2, 0.0])         # m
-    init_vel = np.array([0.0, 0.0, 60.0])          # m s-1
+    init_pos = np.array([0.0, 1000, 0.0])         # m
+    init_vel = np.array([0.0, 0.0, 100.0])          # m s-1
     init_accel = np.array([0.0, 0.0, 0.0])          # m s-2
     init_orient = np.array([[1.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
@@ -360,8 +360,6 @@ def main():
             velocity_conversion_factor = 1.943844 # knots
             altitude_conversion_factor = 3.28084 # feet
 
-        
-
         # AUTOPILOT
 
         # pull up!
@@ -412,7 +410,7 @@ def main():
             player.elevator(elevator_amount)
 
             if np.dot(player.orient[1], enemy_dir) > 0:
-                if np.dot(player.orient[2], enemy_dir) < 0.94:
+                if np.dot(player.orient[2], enemy_dir) < 0.98:
                     player.elevator(0.8)
 
                 else:

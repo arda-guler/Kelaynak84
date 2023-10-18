@@ -295,7 +295,7 @@ class Aircraft(RigidBody):
             self.engine.thrust = 0
 
     def apply_thrust(self, dt):
-        self.engine.compute_thrust(self.vel, dt)
+        self.engine.compute_thrust(self.prop_mass, self.vel, dt)
         self.apply_force(self.orient[2] * self.engine.thrust)
 
     def set_thrust_percent(self, percentage):

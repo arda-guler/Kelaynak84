@@ -52,7 +52,7 @@ def read_industry():
 
         throttle_range = [0, 100] 
         efficiency = 0.6
-        air_fuel_ratio = 2000 # this is an air volume vs. fuel MASS ratio, so it is not going to agree with anything familiar of course
+        air_fuel_ratio = 20000 # this is an air volume vs. fuel MASS ratio, so it is not going to agree with anything familiar of course
         max_fuel_rate = data['fuel_consumption']
         APU_fuel_rate = data['APU_fuel_consumption']
         engines[data['name']] = Turbojet(data['name'], intake, compressor, turbine, nozzle, efficiency, air_fuel_ratio, max_fuel_rate, throttle_range, APU_fuel_rate, data['price'], data['manufacturer'])
@@ -132,7 +132,7 @@ def main():
                   rear_gear_moment, brake_force, cargo_space, weapons)
 
     rocket_pod.platform = AP
-    AP.set_thrust_percent(0)
+    AP.set_thrust_percent(100)
 
     bodies = [AP]
 

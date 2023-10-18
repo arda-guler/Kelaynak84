@@ -19,10 +19,17 @@ class Encounter:
         player = self.player
         
         enemy_airframe_key = random.choice(list(airframes.keys()))
-        enemy_engine_key = random.choice(list(engines.keys()))
-
         enemy_airframe = airframes[enemy_airframe_key]
-        enemy_engine = engines[enemy_engine_key]
+
+        enemy_engine = None
+        # do not pick the same engine as the player
+        # due to a Python quirk, they become the same object
+        # whatever the computer controlled enemy does to the engine
+        # it happens to the player's engine too
+        # TODO: Fix this.
+        while ((not enemy_engine) or (enemy_engine == player.engine)):
+            enemy_engine_key = random.choice(list(engines.keys()))
+            enemy_engine = engines[enemy_engine_key]
             
         # INIT VESSEL
         init_pos = player.pos + np.array([random.uniform(-1000, 1000), random.uniform(100, 500), random.uniform(-1000, 1000)])                                 # m
