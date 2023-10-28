@@ -490,11 +490,12 @@ def main():
                 else:
                     play_bgm(AP_city.bgm)
 
-        if rwr_snd and not get_channel_busy(6):
-            if not (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost"):
-                play_sfx(rwr_snd, -1, 6)
-            else:
-                play_sfx(rwr_snd, 0, 6)
+        if rwr_snd and (not (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost")) and not get_channel_busy(6):
+            play_sfx(rwr_snd, -1, 6)
+
+        if rwr_snd and (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost"):
+            play_sfx(rwr_snd, 0, 8)
+            
         elif not rwr_snd or rwr_snd == "rwr_new" or rwr_snd == "rwr_lost":
             stop_channel(6)
                 

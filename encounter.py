@@ -161,7 +161,8 @@ class Encounter:
 
         if self.enemy.pos[1] < 5 or self.enemy.hp <= 0:
             self.state = "DOWN"
-            play_sfx("explosion", channel=6)
+            play_sfx("explosion", channel=9)
+            play_sfx("rwr_lost", channel=8)
 
     def rwr(self, bodies):
         if not self.rwr_new:
@@ -170,7 +171,7 @@ class Encounter:
 
         if self.state == "DOWN":
             self.rwr_lost = True
-            return "rwr_lost"
+            return None
 
         player = self.player
         player_rel_pos = (player.pos - self.enemy.pos)

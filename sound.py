@@ -19,6 +19,7 @@ bgms = {}
 def init_sound():
     global bgms
     mixer.init()
+    mixer.set_num_channels(10)
 
     try:
         for bgm in os.listdir("data/bgm/"):
