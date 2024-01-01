@@ -77,13 +77,13 @@ def main():
 
     # READ INDUSTRY DATA
     airframes, engines = read_industry()
-    player_airframe = airframes["LM Bombcat"]
-    player_engine = engines["SE 7000"]
+    player_airframe = airframes["OSB Kirlangic"]
+    player_engine = engines["APS 7K"]
         
     # INIT VESSELS
     print("Initializing vessels...")
     init_pos = np.array([0.0, 1000, 0.0])         # m
-    init_vel = np.array([0.0, 0.0, 100.0])          # m s-1
+    init_vel = np.array([0.0, 0.0, 150.0])          # m s-1
     init_accel = np.array([0.0, 0.0, 0.0])          # m s-2
     init_orient = np.array([[1.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
@@ -426,6 +426,7 @@ def main():
 
         for b in bodies:
             if isinstance(b, Rocket):
+                b.guidance(dt)
                 b.apply_accel(gravity)
                 b.apply_drag()
                 b.apply_aero_torque()

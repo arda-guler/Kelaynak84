@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -96,6 +97,24 @@ class Rocket(RigidBody):
             play_sfx("explosion", channel=6)
             del self
 
+    def guidance(self, dt):
+        if (not self.target) or np.linalg.norm(self.vel) == 0:
+            return
+
+        t = self.target
+        m = self
+
+        if np.dot(t.pos - m.pos, self.orient[2]) < 0.1:
+            return
+
+        K_p = 0.001
+
+        aimpoint = t.pos + t.vel * K_p * np.linalg.norm(t.pos - m.pos)
+        aimpoint_dir = aimpoint - m.pos
+        aimpoint_dir /= np.linalg.norm(aimpoint_dir)
+
+        m.vel = m.vel * (1 - dt * 2) + (aimpoint_dir * np.linalg.norm(m.vel)) * dt * 2
+        
     def drain_fuel(self, dt):
         self.update_mass(-self.mass_flow * self.throttle / 100, dt)
 

@@ -363,7 +363,8 @@ def main():
             velocity_conversion_factor = 1.943844 # knots
             altitude_conversion_factor = 3.28084 # feet
 
-        # AUTOPILOT
+         # AUTOPILOT
+        ctrl_state = [0,0,0]
 
         # pull up!
         AP.engine.throttle = 1
@@ -374,11 +375,14 @@ def main():
             if np.dot(AP.orient[1], np.array([0, 1, 0])) < max_orient * 0.8:
                 if np.dot(AP.orient[0], np.array([0, 1, 0])) < 0:
                     AP.aileron(-0.8)
+                    ctrl_state[0] = -0.8
                 else:
                     AP.aileron(0.8)
+                    ctrl_state[0] = 0.8
 
             if np.dot(AP.orient[1], np.array([0, 1, 0])) > 0:
                 AP.elevator(0.8)
+                ctrl_state[1] = 0.8
 
         # dogfight
         elif current_encounter:
@@ -388,21 +392,23 @@ def main():
             enemy_actual_rel_pos = (enemy.pos - player.pos)
             enemy_actual_dist = np.linalg.norm(enemy_actual_rel_pos)
 
-            enemy_rel_pos = (enemy.pos - player.pos) + enemy.vel * enemy_actual_dist / 500
+            enemy_rel_pos = (enemy.pos - player.pos) + enemy.vel * enemy_actual_dist / 600
             enemy_dist = np.linalg.norm(enemy_rel_pos)
             enemy_dir = enemy_rel_pos / enemy_dist
         
             max_orient_1 = np.linalg.norm( enemy_dir - np.dot(player.orient[2], enemy_dir) * player.orient[2] )
             # lift vector not aligned with player?
-            if np.dot(player.orient[1], enemy_dir) < max_orient_1 * 0.8:
+            if np.dot(player.orient[1], enemy_dir) < max_orient_1 * 0.94:
 
                 # should I roll clockwise?
                 if np.dot(player.orient[0], enemy_dir) > 0:
                     aileron_amount = np.dot(player.orient[0], enemy_dir)
                     player.aileron(0.8 * aileron_amount)
+                    ctrl_state[0] = 0.8 * aileron_amount
                 else:
                     aileron_amount = -np.dot(player.orient[0], enemy_dir)
                     player.aileron(-0.8 * aileron_amount)
+                    ctrl_state[0] = -0.8 * aileron_amount
 
             # should I pitch?
             if np.linalg.norm(player.vel) < 100:
@@ -415,15 +421,20 @@ def main():
             if np.dot(player.orient[1], enemy_dir) > 0:
                 if np.dot(player.orient[2], enemy_dir) < 0.98:
                     player.elevator(0.8)
+                    ctrl_state[1] = 0.8
 
                 else:
-                    player.elevator(0.3)
-                    player.weapons[0].shoot(bodies)
+                    player.elevator(0.3 * (np.dot(player.orient[2], enemy_dir) - 0.98) / 0.02 + 0.5)
+                    ctrl_state[1] = 0.3 * (np.dot(player.orient[2], enemy_dir) - 0.98) / 0.02 + 0.5
+
+            if np.dot(player.orient[2], enemy_dir) > 0.92:
+                player.weapons[0].shoot(bodies)
 
         # PHYSICS
 
         for b in bodies:
             if isinstance(b, Rocket):
+                b.guidance(dt)
                 b.apply_accel(gravity)
                 b.apply_drag()
                 b.apply_aero_torque()
@@ -483,16 +494,17 @@ def main():
                 bodies.remove(current_encounter.enemy)
                 current_encounter = None
 
-                if AP_city == None:
-                    play_bgm("pluvious")
-                else:
-                    play_bgm(AP_city.bgm)
+##                if AP_city == None:
+##                    play_bgm("pluvious")
+##                else:
+##                    play_bgm(AP_city.bgm)
 
-        if rwr_snd and not get_channel_busy(6):
-            if not (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost"):
-                play_sfx(rwr_snd, -1, 6)
-            else:
-                play_sfx(rwr_snd, 0, 6)
+        if rwr_snd and (not (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost")) and not get_channel_busy(6):
+            play_sfx(rwr_snd, -1, 6)
+
+        if rwr_snd and (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost"):
+            play_sfx(rwr_snd, 0, 8)
+            
         elif not rwr_snd or rwr_snd == "rwr_new" or rwr_snd == "rwr_lost":
             stop_channel(6)
 

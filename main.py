@@ -420,6 +420,7 @@ def main():
 
         for b in bodies:
             if isinstance(b, Rocket):
+                b.guidance(dt)
                 b.apply_accel(gravity)
                 b.apply_drag()
                 b.apply_aero_torque()

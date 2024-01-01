@@ -98,7 +98,7 @@ class Encounter:
         player_actual_dist = np.linalg.norm(player.pos - self.enemy.pos)
 
         # aimpoint position
-        player_rel_pos = (player.pos - self.enemy.pos) + player.vel * player_actual_dist / 1000
+        player_rel_pos = (player.pos - self.enemy.pos) + player.vel * player_actual_dist / 600
         player_dist = np.linalg.norm(player_rel_pos)
         player_dir = player_rel_pos / player_dist
 
@@ -120,7 +120,7 @@ class Encounter:
         else:
             max_orient_1 = np.linalg.norm( player_dir - np.dot(self.enemy.orient[2], player_dir) * self.enemy.orient[2] )
             # lift vector not aligned with player?
-            if np.dot(self.enemy.orient[1], player_dir) < max_orient_1 * 0.8:
+            if np.dot(self.enemy.orient[1], player_dir) < max_orient_1 * 0.94:
 
                 # should I roll clockwise?
                 if np.dot(self.enemy.orient[0], player_dir) > 0:
@@ -139,11 +139,11 @@ class Encounter:
             self.enemy.elevator(elevator_amount)
 
             if np.dot(self.enemy.orient[1], player_dir) > 0:
-                if np.dot(self.enemy.orient[2], player_dir) < 0.94:
+                if np.dot(self.enemy.orient[2], player_dir) < 0.98:
                     self.enemy.elevator(0.8)
 
                 else:
-                    self.enemy.elevator(0.3)
+                    self.enemy.elevator(0.3 * (np.dot(self.enemy.orient[2], player_dir) - 0.98) / 0.02 + 0.5)
                     self.enemy.weapons[0].shoot(bodies, self.player)
 
         self.enemy.engine.intake.air_intake_vector = -self.enemy.orient[2]
