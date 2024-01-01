@@ -4,6 +4,7 @@ from OpenGL.GLU import *
 import math
 import numpy as np
 
+from rigidbody import *
 from ui import *
 
 class Color:
@@ -202,6 +203,18 @@ def drawModel(model, pos, orient, scale, color=Color(1, 1, 1)):
     
     glPopMatrix()
 
+def drawMissileTrails(m):
+    if len(m.trail) < 2:
+        return
+    
+    glPushMatrix()
+    glColor(1, 1, 1)
+    glBegin(GL_LINES)
+    for p in m.trail:
+        glVertex3f(p[0], p[1], p[2])
+    glEnd()
+    glPopMatrix()
+
 def drawScene(cam, flatland, bodies, cities, scenery_objects, ctrl_state, first_person_ui=False):
     drawFlatland(cam, flatland)
     for c in cities:
@@ -221,5 +234,9 @@ def drawScene(cam, flatland, bodies, cities, scenery_objects, ctrl_state, first_
             drawModel(b.model, b.pos, b.orient, 1, Color(1, 0, 0))
         else:
             drawPoint(o, Color(1, 0, 0))
+
+        if isinstance(b, Rocket):
+            drawMissileTrails(b)
+            
     drawControls(cam, ctrl_state, first_person_ui)
 

@@ -90,6 +90,12 @@ class Rocket(RigidBody):
 
         self.thrust = self.throttle / 100 * self.max_thrust
 
+        self.trail = []
+
+    def update_trail(self):
+        if self.thrust > 0:
+            self.trail.append(self.pos)
+
     def check_target(self, bodies):
         if self.target and np.linalg.norm(self.pos - self.target.pos) < 10:
             self.target.hp -= 50

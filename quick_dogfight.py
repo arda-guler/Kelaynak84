@@ -426,6 +426,7 @@ def main():
 
         for b in bodies:
             if isinstance(b, Rocket):
+                b.update_trail()
                 b.guidance(dt)
                 b.apply_accel(gravity)
                 b.apply_drag()
@@ -436,6 +437,10 @@ def main():
                 b.check_target(bodies)
 
                 if b.pos[1] < floor.height:
+                    bodies.remove(b)
+                    del b
+
+                elif np.linalg.norm(b.pos - AP.pos) > 30000:
                     bodies.remove(b)
                     del b
 

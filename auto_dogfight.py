@@ -429,6 +429,7 @@ def main():
 
         for b in bodies:
             if isinstance(b, Rocket):
+                b.update_trail()
                 b.guidance(dt)
                 b.apply_accel(gravity)
                 b.apply_drag()
@@ -688,16 +689,16 @@ def main():
                     if not c == AP_city:
                         AP_city = c
                         
-                        if current_encounter == None:
-                            play_bgm(c.bgm)    
+##                        if current_encounter == None:
+##                            play_bgm(c.bgm)    
 
                     break
 
             if not city_found:
                 if not AP_city == None:
                     AP_city = None
-                    if current_encounter == None:
-                        play_bgm("pluvious")
+##                    if current_encounter == None:
+##                        play_bgm("pluvious")
 
         # ENCOUNTERS
         if AP.state == "INFLIGHT" and current_encounter == None:
