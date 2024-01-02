@@ -10,7 +10,7 @@ It mixes up the gameplay elements of Elite with a classical flight simulator, an
 ### Main Game (main.py)
 In the main game, you start with a poor-performance aircraft with little money. You need to trade commodities between cities and buy better aircraft components to suit your needs. A larger, bulkier airframe will be handy for that!
 
-As it is the case with Elite, mean pirates will sometimes appear and try to shoot you down. You will have your RWR (Radar Warning Receiver) alerts and unguided rockets to defend yourself. A more maneuverable airframe will come in handy here!
+As it is the case with Elite, mean pirates will sometimes appear and try to shoot you down. You will have your RWR (Radar Warning Receiver) alerts and all-aspect guided rockets to defend yourself. A more maneuverable airframe will come in handy here!
 
 ### Quick Dogfight (quick_dogfight.py)
 This will start you in the air and will almost immediately start a dogfight. Once you defeat one opponent, the other will appear right away. How many waves can you survive?
