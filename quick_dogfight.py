@@ -168,7 +168,7 @@ def main():
 
                  np.array([0, 0, 0]), 1,
 
-                 "death_mask")
+                 "yazilikaya")
     
     city2 = City("Numakawa",
 
@@ -192,7 +192,7 @@ def main():
                  
                  np.array([10000, 0, -30000]), 0.5,
 
-                 "jade_empire")
+                 "numakawa")
     
     city3 = City("Meadowview",
 
@@ -216,7 +216,7 @@ def main():
                  
                  np.array([40000, 0, 12000]), 1.4,
 
-                 "trigger")
+                 "meadowview")
 
     cities = [city1, city2, city3]
 
@@ -492,7 +492,7 @@ def main():
                 current_encounter = None
 
                 if AP_city == None:
-                    play_bgm("pluvious")
+                    play_bgm("fall")
                 else:
                     play_bgm(AP_city.bgm)
 
@@ -700,7 +700,7 @@ def main():
                 if not AP_city == None:
                     AP_city = None
                     if current_encounter == None:
-                        play_bgm("pluvious")
+                        play_bgm("fall")
 
         # ENCOUNTERS
         if AP.state == "INFLIGHT" and current_encounter == None:
@@ -708,7 +708,7 @@ def main():
             if chance < encounter_chance:
                 current_encounter = Encounter(AP, "action", airframes, engines)
                 bodies.append(current_encounter.enemy)
-                play_bgm("massacre_machine")
+                play_bgm("action1")
 
         hundred_cycle += 1
 

@@ -61,7 +61,7 @@ Developer's note: If you want a cheap aircraft, buy components from here.
 
 You have to use the console window to do trading in cities.
 
-## Music License
-Background music is from [Plutonia MIDI Pack](https://www.doomworld.com/idgames/music/plutmidi). License is included in [plutmidi.txt](https://github.com/arda-guler/Kelaynak84/blob/master/plutmidi.txt).
+## Artwork License
+Everything in /data/bgm folder, everything in /data/models folder and everything in /data/icon folder are licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
 
 

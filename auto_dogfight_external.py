@@ -427,7 +427,7 @@ def main():
                     player.elevator(0.3 * (np.dot(player.orient[2], enemy_dir) - 0.98) / 0.02 + 0.5)
                     ctrl_state[1] = 0.3 * (np.dot(player.orient[2], enemy_dir) - 0.98) / 0.02 + 0.5
 
-            if np.dot(player.orient[2], enemy_dir) > 0.92:
+            if np.dot(player.orient[2], enemy_dir) > 0.96:
                 player.weapons[0].shoot(bodies)
 
         # PHYSICS
