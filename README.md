@@ -33,7 +33,7 @@ Developer's note: If you want to make a good fighter aircraft, you buy component
 ### Numakawa
 A small industrial city.
 
-Home to **Matsuboshi**, which specializes in heavy-lift airframes.
+Home to **Mitsabishii**, which specializes in heavy-lift airframes.
 
 Home to **Kobesaki**, which specializes in fuel-efficient propulsion.
 
