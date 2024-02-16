@@ -8,6 +8,9 @@ import random
 import keyboard as kbd
 import json
 import os
+import mouse
+from screeninfo import get_monitors
+import ctypes
 
 from rigidbody import *
 from model import *
@@ -23,6 +26,12 @@ from propulsion import *
 from city import *
 from airframe import *
 from encounter import *
+
+def hide_cursor():
+    ctypes.windll.user32.ShowCursor(False)
+
+def show_cursor():
+    ctypes.windll.user32.ShowCursor(True)
 
 def read_industry():
     airframe_files = os.listdir("./data/industry/airframes/")
@@ -262,6 +271,11 @@ def main():
         main_cam.rotate(rotation)
 
     # CAMERA CONTROLS
+    monitor = get_monitors()[0]
+    screen_x = monitor.width
+    screen_y = monitor.height
+    mouse_rot_active = True
+    
     cam_pitch_up = "K"
     cam_pitch_dn = "I"
     cam_yaw_left = "J"
@@ -306,6 +320,9 @@ def main():
     altitude_conversion_factor = 1
 
     pitch_trim = 0
+    aileron_trim = 0
+    mouse_sensitivity_pitch = 30
+    mouse_sensitivity_roll = 30
 
     encounter_chance = 0.0001
     current_encounter = None
@@ -325,12 +342,31 @@ def main():
                     "Luxuries": 0,
                     "Precious Metals": 0}
 
+    hide_cursor()
     game_running = True
     while not glfw.window_should_close(window):
         t_cycle_start = time.perf_counter()
-        glfw.poll_events() 
+        glfw.poll_events()
+        mouse_activated_this_frame = False
 
         # CONTROLS
+        if kbd.is_pressed("V"):
+            mouse_rot_active = False
+            show_cursor()
+        elif kbd.is_pressed("B"):
+            mouse_rot_active = True
+            mouse_activated_this_frame = True
+            hide_cursor()
+
+        if mouse_rot_active:
+            if not mouse_activated_this_frame:
+                m_pos = mouse.get_position()
+                pitch_trim += dt * (m_pos[1] - screen_y*0.5) / screen_y * mouse_sensitivity_pitch
+                aileron_trim -= dt * (m_pos[0] - screen_x*0.5) / screen_x * mouse_sensitivity_roll
+            mouse.move(screen_x * 0.5, screen_y * 0.5, True)
+
+        pitch_trim = min(max(pitch_trim, -1), 1)
+        aileron_trim = min(max(aileron_trim, -1), 1)
 
         if kbd.is_pressed(cam_pitch_up):
             rotate_cam([cam_rot_speed * dt, 0, 0])
@@ -366,10 +402,10 @@ def main():
         elif kbd.is_pressed(plane_roll_cw):
             ctrl_state[0] -= 1 * dt
         else:
-            if abs(ctrl_state[0]) > 0.3:
-                ctrl_state[0] *= 1 - 2 * dt
+            if abs(ctrl_state[0] - aileron_trim) > 0.3:
+                ctrl_state[0] *= ctrl_state[0] - (ctrl_state[0] - aileron_trim) * dt
             else:
-                ctrl_state[0] = 0
+                ctrl_state[0] = aileron_trim
 
         if kbd.is_pressed(plane_yaw_right):
             ctrl_state[2] += 1 * dt
@@ -736,5 +772,7 @@ def main():
     stop_channel(5)
     stop_channel(6)
     fade_out_bgm()
+    time.sleep(2)
+    show_cursor()
 
 main()
