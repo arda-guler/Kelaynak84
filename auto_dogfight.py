@@ -172,7 +172,7 @@ def main():
     
     city2 = City("Numakawa",
 
-                 "A small industrial city.\n\nHome to Matsuboshi, which specializes in heavy-lift airframes.\nHome to Kobesaki, which specializes in fuel-efficient propulsion.",
+                 "A small industrial city.\n\nHome to Mitsabishii, which specializes in heavy-lift airframes.\nHome to Kobesaki, which specializes in fuel-efficient propulsion.",
                  
                  [airframes["MSB Fuji"], airframes["MSB Kinki"],
                   engines["KS X7"], engines["KS X9"]],

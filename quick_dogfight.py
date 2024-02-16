@@ -181,7 +181,7 @@ def main():
     
     city2 = City("Numakawa",
 
-                 "A small industrial city.\n\nHome to Matsuboshi, which specializes in heavy-lift airframes.\nHome to Kobesaki, which specializes in fuel-efficient propulsion.",
+                 "A small industrial city.\n\nHome to Mitsabishii, which specializes in heavy-lift airframes.\nHome to Kobesaki, which specializes in fuel-efficient propulsion.",
                  
                  [airframes["MSB Fuji"], airframes["MSB Kinki"],
                   engines["KS X7"], engines["KS X9"]],
@@ -326,6 +326,7 @@ def main():
 
     pitch_trim = 0
     aileron_trim = 0
+    deadzone = 5
     mouse_sensitivity_pitch = 30
     mouse_sensitivity_roll = 30
 
@@ -367,12 +368,17 @@ def main():
         if mouse_rot_active:
             if not mouse_activated_this_frame:
                 m_pos = mouse.get_position()
-                pitch_trim += dt * (m_pos[1] - screen_y*0.5) / screen_y * mouse_sensitivity_pitch
-                aileron_trim -= dt * (m_pos[0] - screen_x*0.5) / screen_x * mouse_sensitivity_roll
+                if abs(m_pos[1] - screen_y*0.5) > deadzone:
+                    pitch_trim += dt * (m_pos[1] - screen_y*0.5) / screen_y * mouse_sensitivity_pitch
+                if abs(m_pos[0] - screen_x*0.5) > deadzone:
+                    aileron_trim -= dt * (m_pos[0] - screen_x*0.5) / screen_x * mouse_sensitivity_roll
             mouse.move(screen_x * 0.5, screen_y * 0.5, True)
 
         pitch_trim = min(max(pitch_trim, -1), 1)
         aileron_trim = min(max(aileron_trim, -1), 1)
+
+        ctrl_state[0] = aileron_trim
+        ctrl_state[1] = pitch_trim
 
         # CONTROLS
 
@@ -389,32 +395,32 @@ def main():
         if kbd.is_pressed(cam_roll_ccw):
             rotate_cam([0, 0, -cam_rot_speed * dt])
 
-        if kbd.is_pressed(plane_pitch_up):
-            if kbd.is_pressed("Shift"):
-                pitch_trim += 0.2 * dt
-            else:
-                ctrl_state[1] += 1 * dt
-        elif kbd.is_pressed(plane_pitch_dn):
-            if kbd.is_pressed("Shift"):
-                pitch_trim -= 0.2 * dt
-            else:
-                ctrl_state[1] -= 1 * dt
-        else:
-            if abs(ctrl_state[1] - pitch_trim) > 0.2:
-                ctrl_state[1] = ctrl_state[1] - (ctrl_state[1] - pitch_trim) * dt
-            else:
-                ctrl_state[1] = pitch_trim
-
-        if kbd.is_pressed(plane_roll_ccw):
-            ctrl_state[0] += 1 * dt
-        elif kbd.is_pressed(plane_roll_cw):
-            ctrl_state[0] -= 1 * dt
-        else:
-            if abs(ctrl_state[0] - aileron_trim) > 0.3:
-                ctrl_state[0] *= ctrl_state[0] - (ctrl_state[0] - aileron_trim) * dt
-            else:
-                ctrl_state[0] = aileron_trim
-
+##        if kbd.is_pressed(plane_pitch_up):
+##            if kbd.is_pressed("Shift"):
+##                pitch_trim += 0.2 * dt
+##            else:
+##                ctrl_state[1] += 1 * dt
+##        elif kbd.is_pressed(plane_pitch_dn):
+##            if kbd.is_pressed("Shift"):
+##                pitch_trim -= 0.2 * dt
+##            else:
+##                ctrl_state[1] -= 1 * dt
+##        else:
+##            if abs(ctrl_state[1] - pitch_trim) > 0.2:
+##                ctrl_state[1] = ctrl_state[1] - (ctrl_state[1] - pitch_trim) * dt
+##            else:
+##                ctrl_state[1] = pitch_trim
+##
+##        if kbd.is_pressed(plane_roll_ccw):
+##            ctrl_state[0] += 1 * dt
+##        elif kbd.is_pressed(plane_roll_cw):
+##            ctrl_state[0] -= 1 * dt
+##        else:
+##            if abs(ctrl_state[0] - aileron_trim) > 0.3:
+##                ctrl_state[0] *= ctrl_state[0] - (ctrl_state[0] - aileron_trim) * dt
+##            else:
+##                ctrl_state[0] = aileron_trim
+##
         if kbd.is_pressed(plane_yaw_right):
             ctrl_state[2] += 1 * dt
         elif kbd.is_pressed(plane_yaw_left):
@@ -437,7 +443,7 @@ def main():
                 AP.weapons[0].shoot(bodies)
 
         if kbd.is_pressed(brake):
-            AP.brake = 0.75
+            AP.brake = 0.3
         else:
             AP.brake = 0
 
@@ -529,10 +535,10 @@ def main():
                 bodies.remove(current_encounter.enemy)
                 current_encounter = None
 
-                if AP_city == None:
-                    play_bgm("fall")
-                else:
-                    play_bgm(AP_city.bgm)
+##                if AP_city == None:
+##                    play_bgm("fall")
+##                else:
+##                    play_bgm(AP_city.bgm)
 
         if rwr_snd and (not (rwr_snd == "rwr_new" or rwr_snd == "rwr_lost")) and not get_channel_busy(6):
             play_sfx(rwr_snd, -1, 6)
@@ -729,16 +735,16 @@ def main():
                     if not c == AP_city:
                         AP_city = c
                         
-                        if current_encounter == None:
-                            play_bgm(c.bgm)    
+##                        if current_encounter == None:
+##                            play_bgm(c.bgm)    
 
                     break
 
             if not city_found:
                 if not AP_city == None:
                     AP_city = None
-                    if current_encounter == None:
-                        play_bgm("fall")
+##                    if current_encounter == None:
+##                        play_bgm("fall")
 
         # ENCOUNTERS
         if AP.state == "INFLIGHT" and current_encounter == None:
@@ -746,7 +752,7 @@ def main():
             if chance < encounter_chance:
                 current_encounter = Encounter(AP, "action", airframes, engines)
                 bodies.append(current_encounter.enemy)
-                play_bgm("action1")
+                #play_bgm("action1")
 
         hundred_cycle += 1
 

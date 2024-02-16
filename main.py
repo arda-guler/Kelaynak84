@@ -178,7 +178,7 @@ def main():
     
     city2 = City("Numakawa",
 
-                 "A small industrial city.\n\nHome to Matsuboshi, which specializes in heavy-lift airframes.\nHome to Kobesaki, which specializes in fuel-efficient propulsion.",
+                 "A small industrial city.\n\nHome to Mitsabishii, which specializes in heavy-lift airframes.\nHome to Kobesaki, which specializes in fuel-efficient propulsion.",
                  
                  [airframes["MSB Fuji"], airframes["MSB Kinki"],
                   engines["KS X7"], engines["KS X9"]],
@@ -381,41 +381,41 @@ def main():
         if kbd.is_pressed(cam_roll_ccw):
             rotate_cam([0, 0, -cam_rot_speed * dt])
 
-        if kbd.is_pressed(plane_pitch_up):
-            if kbd.is_pressed("Shift"):
-                pitch_trim += 0.2 * dt
-            else:
-                ctrl_state[1] += 1 * dt
-        elif kbd.is_pressed(plane_pitch_dn):
-            if kbd.is_pressed("Shift"):
-                pitch_trim -= 0.2 * dt
-            else:
-                ctrl_state[1] -= 1 * dt
-        else:
-            if abs(ctrl_state[1] - pitch_trim) > 0.2:
-                ctrl_state[1] = ctrl_state[1] - (ctrl_state[1] - pitch_trim) * dt
-            else:
-                ctrl_state[1] = pitch_trim
-
-        if kbd.is_pressed(plane_roll_ccw):
-            ctrl_state[0] += 1 * dt
-        elif kbd.is_pressed(plane_roll_cw):
-            ctrl_state[0] -= 1 * dt
-        else:
-            if abs(ctrl_state[0] - aileron_trim) > 0.3:
-                ctrl_state[0] *= ctrl_state[0] - (ctrl_state[0] - aileron_trim) * dt
-            else:
-                ctrl_state[0] = aileron_trim
-
-        if kbd.is_pressed(plane_yaw_right):
-            ctrl_state[2] += 1 * dt
-        elif kbd.is_pressed(plane_yaw_left):
-            ctrl_state[2] -= 1 * dt
-        else:
-            if abs(ctrl_state[2]) > 0.3:
-                ctrl_state[2] *= 1 - 2 * dt
-            else:
-                ctrl_state[2] = 0
+##        if kbd.is_pressed(plane_pitch_up):
+##            if kbd.is_pressed("Shift"):
+##                pitch_trim += 0.2 * dt
+##            else:
+##                ctrl_state[1] += 1 * dt
+##        elif kbd.is_pressed(plane_pitch_dn):
+##            if kbd.is_pressed("Shift"):
+##                pitch_trim -= 0.2 * dt
+##            else:
+##                ctrl_state[1] -= 1 * dt
+##        else:
+##            if abs(ctrl_state[1] - pitch_trim) > 0.2:
+##                ctrl_state[1] = ctrl_state[1] - (ctrl_state[1] - pitch_trim) * dt
+##            else:
+##                ctrl_state[1] = pitch_trim
+##
+##        if kbd.is_pressed(plane_roll_ccw):
+##            ctrl_state[0] += 1 * dt
+##        elif kbd.is_pressed(plane_roll_cw):
+##            ctrl_state[0] -= 1 * dt
+##        else:
+##            if abs(ctrl_state[0] - aileron_trim) > 0.3:
+##                ctrl_state[0] *= ctrl_state[0] - (ctrl_state[0] - aileron_trim) * dt
+##            else:
+##                ctrl_state[0] = aileron_trim
+##
+##        if kbd.is_pressed(plane_yaw_right):
+##            ctrl_state[2] += 1 * dt
+##        elif kbd.is_pressed(plane_yaw_left):
+##            ctrl_state[2] -= 1 * dt
+##        else:
+##            if abs(ctrl_state[2]) > 0.3:
+##                ctrl_state[2] *= 1 - 2 * dt
+##            else:
+##                ctrl_state[2] = 0
 
         if kbd.is_pressed(plane_throttle_up):
             AP.update_throttle(30, dt)
@@ -429,7 +429,7 @@ def main():
                 AP.weapons[0].shoot(bodies)
 
         if kbd.is_pressed(brake):
-            AP.brake = 0.75
+            AP.brake = 0.3
         else:
             AP.brake = 0
 
